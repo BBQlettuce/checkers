@@ -1,3 +1,4 @@
+require 'byebug'
 require_relative 'board'
 
 class Game
@@ -23,23 +24,32 @@ class Game
         picked_pos = current_player.ask_for_position
         raise "Nothing there!" if gameboard[picked_pos].nil?
         picked_piece = gameboard[picked_pos]
-        if picked_piece.color != current_player.color
+        if current_player.picked_wrong_color(picked_piece.color)
           raise "You can't move your opponent's piece!"
         end
-      rescue
+        if picked_piece.no_valid_moves?
+          raise "This piece has nowhere to go!"
+        end
+      rescue ArgumentError
+        puts "Put in a real position!"
+        retry
+      rescue Exception => e
+        puts e.message
         puts "Try again."
         retry
       end
 
       begin
+        #debugger
         letter_inputs = current_player.ask_for_move_seq
         move_sequence = translate_move_seq(picked_piece, letter_inputs)
         picked_piece.perform_moves(move_sequence)
-      rescue
+      rescue Exception => e
+        puts e.message
         puts "Try again."
         retry
       end
-      board.assign_kings
+      gameboard.assign_kings
       switch_players
     end
     gameboard.render
@@ -56,21 +66,23 @@ class Game
   end
 
   def translate_move_seq(piece, letter_inputs)
-    temp_pos = piece.pos
-    piece_dir = piece.forward_dir
+    pos = piece.pos
+    dir = piece.forward_dir
+    # stuff changes depending on the # of inputs
+    step = letter_inputs.length == 1 ? 1 : 2
     output_targets = []
     letter_inputs.each do |input|
       case input
       when "l"
-        output_targets << [temp_pos[0] + piece_dir, temp_pos[1] - 1]
+        output_targets << [pos[0] + step * dir, pos[1] - step * 1]
       when "r"
-        output_targets << [temp_pos[0] + piece_dir, temp_pos[1] + 1]
+        output_targets << [pos[0] + step * dir, pos[1] + step * 1]
       when "bl"
-        output_targets << [temp_pos[0] - piece_dir, temp_pos[1] - 1]
+        output_targets << [pos[0] - step * dir, pos[1] - step * 1]
       when "br"
-        output_targets << [temp_pos[0] - piece_dir, temp_pos[1] + 1]
+        output_targets << [pos[0] - step * dir, pos[1] + step * 1]
       end
-      temp_pos = output_targets.last
+      pos = output_targets.last
     end
 
     output_targets
@@ -99,6 +111,12 @@ class HumanPlayer
     end
     input
   end
+
+  # can't pick your opponent's piece
+  def picked_wrong_color(picked_color)
+    color != picked_color
+  end
+
 end
 
 

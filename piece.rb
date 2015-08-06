@@ -1,7 +1,7 @@
 require 'colorize'
 
-# class InvalidMoveError < RuntimeError
-# end
+class InvalidMoveError < RuntimeError
+end
 
 class Piece
 
@@ -47,8 +47,8 @@ class Piece
     # target_pos = [pos[0] + (dir * 2), pos[1] + (angle * 2)]
     if possible_jumps.include?(target_pos)
       # make the move
-      avg_x = (start_pos[0] + target_pos[0]) / 2
-      avg_y = (start_pos[1] + target_pos[1]) / 2
+      avg_x = (pos[0] + target_pos[0]) / 2
+      avg_y = (pos[1] + target_pos[1]) / 2
       board.delete_piece(pos)
       board.delete_piece([avg_x, avg_y])
       self.pos = target_pos
@@ -62,7 +62,12 @@ class Piece
   def perform_moves!(move_sequence)
     if move_sequence.length == 1
       target_pos = move_sequence.first
+      # first try sliding
       return if perform_slide(target_pos)
+      # then increment the step and try jumping
+      x_dif = target_pos[0] - pos[0]
+      y_dif = target_pos[1] - pos[1]
+      target_pos = [pos[0] + 2 * x_dif, pos[1] + 2 * y_dif]
       return if perform_jump(target_pos)
       raise "Cannot perform this move."
     else
@@ -77,7 +82,7 @@ class Piece
     # find the corresponding fake piece
     fake_piece = fake_board[pos]
     begin
-      fake_piece.perform_moves!
+      fake_piece.perform_moves!(move_sequence)
       return true
     rescue
       return false
@@ -133,6 +138,10 @@ class Piece
       end
     end
     moves
+  end
+
+  def no_valid_moves?
+    (possible_slides + possible_jumps).empty?
   end
 
 end

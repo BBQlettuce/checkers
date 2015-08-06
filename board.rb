@@ -1,4 +1,3 @@
-require 'byebug'
 require_relative 'piece'
 
 class Board
@@ -74,11 +73,13 @@ class Board
     # black pieces become kings when they hit row 0
     # red pieces become kings when they hit row 7
     grid[0].each do |cell|
-      cell.become_king if cell.occupied? && cell.color == :black
+      cell.become_king if !cell.nil? && cell.color == :black
+    end
     grid[7].each do |cell|
-      cell.become_king if cell.occupied? && cell.color == :red
+      cell.become_king if !cell.nil? && cell.color == :red
+    end
   end
-  
+
   def team(color)
     pieces.select { |piece| piece.color == color}
   end
