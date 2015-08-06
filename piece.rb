@@ -10,8 +10,6 @@ class Piece
   LEFT = -1
   RIGHT = 1
   LEFT_AND_RIGHT = [LEFT, RIGHT]
-  # UP_MOVE_DIRS = [[-1, -1], [-1, 1]]
-  # DOWN_MOVE_DIRS = [[1, -1], [1, 1]]
 
   attr_accessor :pos, :color, :king
   attr_reader :board
@@ -61,17 +59,36 @@ class Piece
     end
   end
 
-  def perform_moves(move_sequence)
+  def perform_moves!(move_sequence)
     if move_sequence.length == 1
-      angle, forward = move_sequence.first
-      return if perform_slide(angle, forward)
-      return if perform_jump(angle, forward)
+      target_pos = move_sequence.first
+      return if perform_slide(target_pos)
+      return if perform_jump(target_pos)
       raise "Cannot perform this move."
     else
-      move_sequence.each do |move|
-        angle, forward = move
-        raise "Cannot perform this move." unless perform_jump(angle, forward)
+      move_sequence.each do |target_pos|
+        raise "Cannot perform this move." unless perform_jump(target_pos)
       end
+    end
+  end
+
+  def valid_move_seq?(move_sequence)
+    fake_board = board.dup
+    # find the corresponding fake piece
+    fake_piece = fake_board[pos]
+    begin
+      fake_piece.perform_moves!
+      return true
+    rescue
+      return false
+    end
+  end
+
+  def perform_moves(move_sequence)
+    if valid_move_seq?(move_sequence)
+      perform_moves!(move_sequence)
+    else
+      raise "Cannot perform this sequence of moves."
     end
   end
 
@@ -95,11 +112,6 @@ class Piece
     is_king? ? [forward_dir, backward_dir] : [forward_dir]
   end
 
-  # def possible_slides
-  #   # returns array of positions that this piece can slide to
-  #   is_king? ? slides(forward_dir) + slides(backward_dir) : slides(forward_dir)
-  # end
-
   def possible_slides
     moves = []
     directions.each do |dir|
@@ -110,11 +122,6 @@ class Piece
     end
     moves
   end
-
-  # def possible_jumps
-  #   # you can jump if there is an enemy in front, who has an empty space behind them
-  #   is_king? ? jumps(forward_dir) + jumps(backward_dir) : jumps(forward_dir)
-  # end
 
   def possible_jumps
     moves = []

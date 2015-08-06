@@ -94,6 +94,7 @@ class Board
   # end
 
   # all the pieces of a color
+
   def team(color)
     pieces.select { |piece| piece.color == color}
   end
