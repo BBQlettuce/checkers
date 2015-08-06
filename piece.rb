@@ -16,22 +16,19 @@ class Piece
   end
 
   def appearance
-    picture = is_king? ? "O" : "O"
+    picture = is_king? ? "0" : "O"
     "|#{picture.colorize(color)}"
   end
 
-  # def possible_moves
-  #   # you must take a jump if you can
-  #
-  # end
-
-  def perform_slide
-    # asks the board to do it, if possible
+  #?????
+  def perform_slide(end_pos)
+    board.make_move(pos, end_pos)
   end
 
-  def perform_jump
-    # asks the board to do it
+  def perform_jump(end_pos)
+    board.make_move(pos, end_pos)
   end
+ #?????
 
   def is_king?
     king
