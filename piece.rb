@@ -11,14 +11,14 @@ class Piece
   RIGHT = 1
   LEFT_AND_RIGHT = [LEFT, RIGHT]
 
-  attr_accessor :pos, :color, :king
+  attr_accessor :pos, :color, :is_king
   attr_reader :board
 
-  def initialize(pos, board, color)
+  def initialize(pos, color, is_king, board)
     @pos = pos
-    @king = false
-    @board = board
     @color = color
+    @is_king = is_king
+    @board = board
     board.add_piece(self, pos)
   end
 
@@ -98,11 +98,11 @@ class Piece
   end
 
   def is_king?
-    king
+    is_king
   end
 
   def become_king
-    self.king = true
+    self.is_king = true
   end
 
   def forward_dir

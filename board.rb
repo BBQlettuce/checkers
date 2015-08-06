@@ -59,11 +59,16 @@ class Board
     grid.flatten.compact
   end
 
+  # USED FOR DEBUGGING kings
+  def any_kings?
+    pieces.any? {|p| p.is_king? }
+  end
+
   def dup
     dup_board = Board.new(false)
     pieces.each do |piece|
       dup_pos = piece.pos.dup
-      Piece.new(dup_pos, dup_board, piece.color)
+      Piece.new(dup_pos, piece.color, piece.is_king?, dup_board)
     end
     dup_board
   end
@@ -131,9 +136,9 @@ class Board
     odds = (0...BOARD_SIZE).select { |x| x.odd? }
     evens = (0...BOARD_SIZE).select { |x| x.even? }
     if row.even?
-      odds.each {|col| Piece.new([row,col], self, nil)}
+      odds.each {|col| Piece.new([row,col], nil, false, self)}
     else
-      evens.each {|col| Piece.new([row,col], self, nil)}
+      evens.each {|col| Piece.new([row,col], nil, false, self)}
     end
   end
 

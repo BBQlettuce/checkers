@@ -43,7 +43,6 @@ class Game
       end
 
       begin
-        #debugger
         letter_inputs = current_player.ask_for_move_seq
         move_sequence = translate_move_seq(picked_piece, letter_inputs)
         picked_piece.perform_moves(move_sequence)
