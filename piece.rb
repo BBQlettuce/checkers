@@ -29,54 +29,48 @@ class Piece
     "|#{picture.colorize(color)}"
   end
 
-  def perform_slide(angle, forward)
-    dir = forward ? forward_dir : backward_dir
-    target_pos = [pos[0] + dir, pos[1] + angle]
+  # can get rid of angle and stuff, and only take in a target pos;
+  # then possible_slides and jumps can be simplified
+  def perform_slide(target_pos)
+    # dir = forward ? forward_dir : backward_dir
+    # target_pos = [pos[0] + dir, pos[1] + angle]
     if possible_slides.include?(target_pos)
+      board.delete_piece(pos)
       self.pos = target_pos
       board.add_piece(self, target_pos)
-      board.delete_piece(start_pos)
+      return true
     else
-      raise "Invalid Move"
+      return false
     end
   end
 
-  def perform_jump(angle, forward)
-    dir = forward ? forward_dir : backward_dir
-    target_pos = [pos[0] + (dir * 2), pos[1] + (angle * 2)]
-    board.make_move(pos, target_pos)
-    if chosen_piece.possible_jumps.include?(target_pos)
+  def perform_jump(target_pos)
+    # dir = forward ? forward_dir : backward_dir
+    # target_pos = [pos[0] + (dir * 2), pos[1] + (angle * 2)]
+    if possible_jumps.include?(target_pos)
       # make the move
       avg_x = (start_pos[0] + target_pos[0]) / 2
       avg_y = (start_pos[1] + target_pos[1]) / 2
+      board.delete_piece(pos)
+      board.delete_piece([avg_x, avg_y])
       self.pos = target_pos
       board.add_piece(self, target_pos)
-      board.delete_piece(start_pos)
-      board.delete_piece([avg_x, avg_y])
+      return true
     else
-      raise "Invalid Move"
+      return false
     end
   end
 
   def perform_moves(move_sequence)
     if move_sequence.length == 1
       angle, forward = move_sequence.first
-      begin
-        perform_slide(angle, forward)
-      rescue
-        perform_jump(angle, forward)
-      rescue
-        raise "Cannot perform this move."
-      end
+      return if perform_slide(angle, forward)
+      return if perform_jump(angle, forward)
+      raise "Cannot perform this move."
     else
       move_sequence.each do |move|
         angle, forward = move
-        begin
-          perform_jump(angle, forward)
-        rescue
-          raise "Cannot perform this move."
-          break
-        end
+        raise "Cannot perform this move." unless perform_jump(angle, forward)
       end
     end
   end
@@ -101,31 +95,35 @@ class Piece
     is_king? ? [forward_dir, backward_dir] : [forward_dir]
   end
 
-  def possible_slides
-    # returns array of positions that this piece can slide to
-    is_king? ? slides(forward_dir) + slides(backward_dir) : slides(forward_dir)
-  end
+  # def possible_slides
+  #   # returns array of positions that this piece can slide to
+  #   is_king? ? slides(forward_dir) + slides(backward_dir) : slides(forward_dir)
+  # end
 
-  def slides(dir)
+  def possible_slides
     moves = []
-    LEFT_AND_RIGHT.each do |angle|
-      next_pos = [pos[0] + dir, pos[1] + angle]
-      moves << next_pos if board.open?(next_pos)
+    directions.each do |dir|
+      LEFT_AND_RIGHT.each do |angle|
+        next_pos = [pos[0] + dir, pos[1] + angle]
+        moves << next_pos if board.open?(next_pos)
+      end
     end
     moves
   end
 
-  def possible_jumps
-    # you can jump if there is an enemy in front, who has an empty space behind them
-    is_king? ? jumps(forward_dir) + jumps(backward_dir) : jumps(forward_dir)
-  end
+  # def possible_jumps
+  #   # you can jump if there is an enemy in front, who has an empty space behind them
+  #   is_king? ? jumps(forward_dir) + jumps(backward_dir) : jumps(forward_dir)
+  # end
 
-  def jumps(dir)
+  def possible_jumps
     moves = []
-    LEFT_AND_RIGHT.each do |angle|
-      next_pos = [pos[0] + dir, pos[1] + angle]
-      hop_pos = [next_pos[0] + dir, next_pos[1] + angle]
-      moves << hop_pos if board.has_enemy?(next_pos, color) && board.open?(hop_pos)
+    directions.each do |dir|
+      LEFT_AND_RIGHT.each do |angle|
+        next_pos = [pos[0] + dir, pos[1] + angle]
+        hop_pos = [next_pos[0] + dir, next_pos[1] + angle]
+        moves << hop_pos if board.has_enemy?(next_pos, color) && board.open?(hop_pos)
+      end
     end
     moves
   end
