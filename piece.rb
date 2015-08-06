@@ -16,10 +16,11 @@ class Piece
   attr_accessor :pos, :color, :king
   attr_reader :board
 
-  def initialize(pos, board)
+  def initialize(pos, board, color)
     @pos = pos
     @king = false
     @board = board
+    @color = color
     board.add_piece(self, pos)
   end
 
@@ -63,12 +64,19 @@ class Piece
       begin
         perform_slide(angle, forward)
       rescue
-        perform_slide(angle, forward)
+        perform_jump(angle, forward)
+      rescue
+        raise "Cannot perform this move."
       end
     else
       move_sequence.each do |move|
         angle, forward = move
-        perform_jump(angle, forward)
+        begin
+          perform_jump(angle, forward)
+        rescue
+          raise "Cannot perform this move."
+          break
+        end
       end
     end
   end
@@ -87,6 +95,10 @@ class Piece
 
   def backward_dir
     color == :black ? DOWN : UP
+  end
+
+  def directions
+    is_king? ? [forward_dir, backward_dir] : [forward_dir]
   end
 
   def possible_slides

@@ -55,6 +55,19 @@ class Board
     occupied?(pos) && self[pos].color != color
   end
 
+  def pieces
+    grid.flatten.compact
+  end
+
+  def dup
+    dup_board = Board.new(false)
+    pieces.each do |piece|
+      dup_pos = piece.pos.dup
+      Piece.new(dup_pos, dup_board, piece.color)
+    end
+    dup_board
+  end
+
   # def make_move(start_pos, end_pos)
   #   # doesnt care about color or kingness, but must be a jump if a jump is available
   #   # check if there is a piece at start_pos
@@ -82,7 +95,7 @@ class Board
 
   # all the pieces of a color
   def team(color)
-    grid.flatten.compact.select { |piece| piece.color == color}
+    pieces.select { |piece| piece.color == color}
   end
 
   # true if there are any jumps available for this team
@@ -109,14 +122,13 @@ class Board
     odds = (0...BOARD_SIZE).select { |x| x.odd? }
     evens = (0...BOARD_SIZE).select { |x| x.even? }
     if row.even?
-      odds.each {|col| Piece.new([row,col], self)}
+      odds.each {|col| Piece.new([row,col], self, nil)}
     else
-      evens.each {|col| Piece.new([row,col],self)}
+      evens.each {|col| Piece.new([row,col], self, nil)}
     end
   end
 
   def set_starting_colors
-    pieces = grid.flatten.compact
     pieces.each do |piece|
       x, _ = piece.pos
       #set color based on position
