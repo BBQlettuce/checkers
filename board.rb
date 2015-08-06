@@ -21,7 +21,12 @@ class Board
   end
 
   def render
-
+    grid.each do |row|
+      row.each do |cell|
+        print cell.nil? ? "[ ]" : cell.appearance
+      end
+      print "\n"
+    end
   end
 
   def add_piece(piece, pos)

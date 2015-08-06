@@ -1,3 +1,5 @@
+require 'colorize'
+
 class Piece
 
   UP_MOVE_DIRS = [[-1, -1], [-1, 1]]
@@ -11,6 +13,10 @@ class Piece
     @king = false
     @board = board
     board.add_piece(self, pos)
+  end
+
+  def appearance
+    "[#{'0'.colorize(color)}]"
   end
 
   def possible_slides
