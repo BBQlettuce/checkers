@@ -35,7 +35,7 @@ class Board
   end
 
   def delete_piece(pos)
-    raise "no piece to delete" unless occupied(pos)
+    raise "no piece to delete" unless occupied?(pos)
     self[pos] = nil
   end
 
@@ -59,7 +59,7 @@ class Board
     # doesnt care about color or kingness, but must be a jump if a jump is available
     # check if there is a piece at start_pos
     raise "No piece there!" unless occupied?(start_pos)
-    chosen_piece = self[pos]
+    chosen_piece = self[start_pos]
     # if this piece can jump, it must jump
     if chosen_piece.possible_jumps.include?(end_pos)
       # make the move
@@ -123,5 +123,9 @@ class Board
       piece.color = x < BOARD_SIZE / 2 ? :red : :black
     end
   end
+
+end
+
+if __FILE__ == $PROGRAM_NAME
 
 end

@@ -27,13 +27,13 @@ class Piece
 
   #?????
   def perform_slide(angle, forward = true)
-    dir = backwards ? forward_dir : backward_dir
+    dir = forward ? forward_dir : backward_dir
     target_pos = [pos[0] + dir, pos[1] + angle]
     board.make_move(pos, target_pos)
   end
 
   def perform_jump(angle, forward = true)
-    dir = backwards ? forward_dir : backward_dir
+    dir = forward ? forward_dir : backward_dir
     target_pos = [pos[0] + (dir * 2), pos[1] + (angle * 2)]
     board.make_move(pos, target_pos)
   end
