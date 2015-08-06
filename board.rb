@@ -6,13 +6,7 @@ class Board
   attr_reader :grid
 
   def initialize(autofill = true)
-    # @grid = Array.new(BOARD_SIZE) { Array.new(BOARD_SIZE) }
     set_pieces(autofill)
-  end
-
-  def set_pieces(autofill)
-    @grid = Array.new(BOARD_SIZE) { Array.new(BOARD_SIZE) }
-    place_starting_pieces if autofill
   end
 
   def [](pos)
@@ -23,6 +17,24 @@ class Board
   def []=(pos, value)
     row, col = pos
     grid[row][col] = value
+  end
+
+  def self.in_board?(pos)
+    pos.all? { |coord| coord.between?(0, BOARD_SIZE - 1)}
+  end
+
+  def open?(pos)
+    self[pos].nil?
+  end
+
+  def make_move(start_pos, end_pos)
+    # doesnt care about color or kingness, only position
+
+  end
+
+  def set_pieces(autofill)
+    @grid = Array.new(BOARD_SIZE) { Array.new(BOARD_SIZE) }
+    place_starting_pieces if autofill
   end
 
   def place_starting_pieces
@@ -48,7 +60,7 @@ class Board
   def set_starting_colors
     pieces = grid.flatten.compact
     pieces.each do |piece|
-      x, _ = piece.position
+      x, _ = piece.pos
       #set color based on position
       piece.color = x < BOARD_SIZE / 2 ? :red : :black
     end
