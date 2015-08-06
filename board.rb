@@ -21,6 +21,7 @@ class Board
   end
 
   def render
+    system('clear')
     grid.each do |row|
       row.each do |cell|
         print cell.nil? ? "| " : cell.appearance
@@ -68,33 +69,6 @@ class Board
     dup_board
   end
 
-  # def make_move(start_pos, end_pos)
-  #   # doesnt care about color or kingness, but must be a jump if a jump is available
-  #   # check if there is a piece at start_pos
-  #   raise "No piece there!" unless occupied?(start_pos)
-  #   chosen_piece = self[start_pos]
-  #   # if this piece can jump, it must jump
-  #   if chosen_piece.possible_jumps.include?(end_pos)
-  #     # make the move
-  #     avg_x = (start_pos[0] + end_pos[0]) / 2
-  #     avg_y = (start_pos[1] + end_pos[1]) / 2
-  #     chosen_piece.pos = end_pos
-  #     add_piece(chosen_piece, end_pos)
-  #     delete_piece(start_pos)
-  #     delete_piece([avg_x, avg_y])
-  #   elsif must_jump?(chosen_piece.color)
-  #     raise "You must take a piece if it's available!"
-  #   elsif chosen_piece.possible_slides.include?(end_pos)
-  #     chosen_piece.pos = end_pos
-  #     add_piece(chosen_piece, end_pos)
-  #     delete_piece(start_pos)
-  #   else
-  #     raise "You can't move there."
-  #   end
-  # end
-
-  # all the pieces of a color
-
   def team(color)
     pieces.select { |piece| piece.color == color}
   end
@@ -103,6 +77,29 @@ class Board
   def must_jump?(color)
     team(color).any? { |piece| !piece.possible_jumps.empty?}
   end
+
+  def winner
+    :red if no_more_pieces(:black) || no_more_moves(:black)
+    :black if no_more_pieces(:red) || no_more_moves(:red)
+    nil
+  end
+
+  def over?
+    !winner.nil?
+  end
+
+  # lose conditions
+  def no_more_moves(color)
+    team(color).all? do |piece|
+      piece.possible_slides.empty? && piece.possible_jumps.empty?
+    end
+  end
+
+  def no_more_pieces(color)
+    team(color).empty?
+  end
+
+  private
 
   def set_pieces(autofill)
     @grid = Array.new(BOARD_SIZE) { Array.new(BOARD_SIZE) }
@@ -136,9 +133,5 @@ class Board
       piece.color = x < BOARD_SIZE / 2 ? :red : :black
     end
   end
-
-end
-
-if __FILE__ == $PROGRAM_NAME
 
 end
