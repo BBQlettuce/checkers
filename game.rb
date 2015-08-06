@@ -14,7 +14,10 @@ class Game
 
   def play
     puts "Play Checkers\n"
-    until
+    until gameboard.over?
+
+    end
+
   end
 
   def switch_player

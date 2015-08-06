@@ -69,6 +69,16 @@ class Board
     dup_board
   end
 
+  # run this after every turn to set kings if possible
+  def assign_kings
+    # black pieces become kings when they hit row 0
+    # red pieces become kings when they hit row 7
+    grid[0].each do |cell|
+      cell.become_king if cell.occupied? && cell.color == :black
+    grid[7].each do |cell|
+      cell.become_king if cell.occupied? && cell.color == :red
+  end
+  
   def team(color)
     pieces.select { |piece| piece.color == color}
   end
