@@ -1,5 +1,8 @@
 require 'colorize'
 
+# class InvalidMoveError < RuntimeError
+# end
+
 class Piece
 
   UP = -1
@@ -25,19 +28,50 @@ class Piece
     "|#{picture.colorize(color)}"
   end
 
-  #?????
-  def perform_slide(angle, forward = true)
+  def perform_slide(angle, forward)
     dir = forward ? forward_dir : backward_dir
     target_pos = [pos[0] + dir, pos[1] + angle]
-    board.make_move(pos, target_pos)
+    if possible_slides.include?(target_pos)
+      self.pos = target_pos
+      board.add_piece(self, target_pos)
+      board.delete_piece(start_pos)
+    else
+      raise "Invalid Move"
+    end
   end
 
-  def perform_jump(angle, forward = true)
+  def perform_jump(angle, forward)
     dir = forward ? forward_dir : backward_dir
     target_pos = [pos[0] + (dir * 2), pos[1] + (angle * 2)]
     board.make_move(pos, target_pos)
+    if chosen_piece.possible_jumps.include?(target_pos)
+      # make the move
+      avg_x = (start_pos[0] + target_pos[0]) / 2
+      avg_y = (start_pos[1] + target_pos[1]) / 2
+      self.pos = target_pos
+      board.add_piece(self, target_pos)
+      board.delete_piece(start_pos)
+      board.delete_piece([avg_x, avg_y])
+    else
+      raise "Invalid Move"
+    end
   end
- #?????
+
+  def perform_moves(move_sequence)
+    if move_sequence.length == 1
+      angle, forward = move_sequence.first
+      begin
+        perform_slide(angle, forward)
+      rescue
+        perform_slide(angle, forward)
+      end
+    else
+      move_sequence.each do |move|
+        angle, forward = move
+        perform_jump(angle, forward)
+      end
+    end
+  end
 
   def is_king?
     king

@@ -55,30 +55,30 @@ class Board
     occupied?(pos) && self[pos].color != color
   end
 
-  def make_move(start_pos, end_pos)
-    # doesnt care about color or kingness, but must be a jump if a jump is available
-    # check if there is a piece at start_pos
-    raise "No piece there!" unless occupied?(start_pos)
-    chosen_piece = self[start_pos]
-    # if this piece can jump, it must jump
-    if chosen_piece.possible_jumps.include?(end_pos)
-      # make the move
-      avg_x = (start_pos[0] + end_pos[0]) / 2
-      avg_y = (start_pos[1] + end_pos[1]) / 2
-      chosen_piece.pos = end_pos
-      add_piece(chosen_piece, end_pos)
-      delete_piece(start_pos)
-      delete_piece([avg_x, avg_y])
-    elsif must_jump?(chosen_piece.color)
-      raise "You must take a piece if it's available!"
-    elsif chosen_piece.possible_slides.include?(end_pos)
-      chosen_piece.pos = end_pos
-      add_piece(chosen_piece, end_pos)
-      delete_piece(start_pos)
-    else
-      raise "You can't move there."
-    end
-  end
+  # def make_move(start_pos, end_pos)
+  #   # doesnt care about color or kingness, but must be a jump if a jump is available
+  #   # check if there is a piece at start_pos
+  #   raise "No piece there!" unless occupied?(start_pos)
+  #   chosen_piece = self[start_pos]
+  #   # if this piece can jump, it must jump
+  #   if chosen_piece.possible_jumps.include?(end_pos)
+  #     # make the move
+  #     avg_x = (start_pos[0] + end_pos[0]) / 2
+  #     avg_y = (start_pos[1] + end_pos[1]) / 2
+  #     chosen_piece.pos = end_pos
+  #     add_piece(chosen_piece, end_pos)
+  #     delete_piece(start_pos)
+  #     delete_piece([avg_x, avg_y])
+  #   elsif must_jump?(chosen_piece.color)
+  #     raise "You must take a piece if it's available!"
+  #   elsif chosen_piece.possible_slides.include?(end_pos)
+  #     chosen_piece.pos = end_pos
+  #     add_piece(chosen_piece, end_pos)
+  #     delete_piece(start_pos)
+  #   else
+  #     raise "You can't move there."
+  #   end
+  # end
 
   # all the pieces of a color
   def team(color)
