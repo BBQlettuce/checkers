@@ -17,7 +17,7 @@ class Piece
 
   def appearance
     picture = is_king? ? "O" : "O"
-    "[#{picture.colorize(color)}]"
+    "|#{picture.colorize(color)}"
   end
 
 
@@ -44,7 +44,6 @@ class Piece
   def possible_slides
     # returns array of positions that this piece can slide to
     is_king? ? slides(forward_dirs) + slides(backward_dirs) : slides(forward_dirs)
-    #forward_slides + backward_slides
   end
 
   def slides(dirs)
@@ -59,7 +58,6 @@ class Piece
   def possible_jumps
     # you can jump if there is an enemy in front, who has an empty space behind them
     is_king? ? jumps(forward_dirs) + jumps(backward_dirs) : jumps(forward_dirs)
-    #forward_jumps + backward_jumps
   end
 
   def jumps(dirs)
@@ -71,26 +69,5 @@ class Piece
     end
     moves
   end
-  #
-  # def forward_jumps
-  #   moves = []
-  #   forward_dirs.each do |x,y|
-  #     next_pos = [pos[0] + x, pos[1] + y]
-  #     hop_pos = [next_pos[0] + x, next_pos[1] + y]
-  #     moves << hop_pos if board.has_enemy?(next_pos, color) &&board.open?(hop_pos)
-  #   end
-  #   moves
-  # end
-  #
-  # def backward_jumps
-  #   return [] if !is_king?
-  #   moves = []
-  #   backward_dirs.each do |x,y|
-  #     next_pos = [pos[0] + x, pos[1] + y]
-  #     hop_pos = [next_pos[0] + x, next_pos[1] + y]
-  #     moves << hop_pos if board.has_enemy?(next_pos, color) &&board.open?(hop_pos)
-  #   end
-  #   moves
-  # end
 
 end

@@ -23,9 +23,9 @@ class Board
   def render
     grid.each do |row|
       row.each do |cell|
-        print cell.nil? ? "[ ]" : cell.appearance
+        print cell.nil? ? "| " : cell.appearance
       end
-      print "\n"
+      print "|\n"
     end
   end
 
@@ -42,15 +42,27 @@ class Board
     Board.in_board?(pos) && self[pos].nil?
   end
 
+  def occupied?(pos)
+    Board.in_board?(pos) && !self[pos].nil?
+  end
+
   def has_enemy?(pos, color)
-    Board.in_board?(pos) && !open?(pos) && self[pos].color != color
+    occupied?(pos) && self[pos].color != color
   end
 
   def make_move(start_pos, end_pos)
     # doesnt care about color or kingness, only position
+    # check if there is a piece at start_pos
+    raise "No piece there!" unless occupied?(start_pos)
+    chosen_piece = self[pos]
 
   end
 
+  # all the pieces of a color
+  def teammates(color)
+    grid.flatten.compact.select { |piece| piece.color == color}
+  end
+  
   def set_pieces(autofill)
     @grid = Array.new(BOARD_SIZE) { Array.new(BOARD_SIZE) }
     place_starting_pieces if autofill
