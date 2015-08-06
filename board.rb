@@ -34,6 +34,11 @@ class Board
     self[pos] = piece
   end
 
+  def delete_piece(pos)
+    raise "no piece to delete" unless occupied(pos)
+    self[pos] = nil
+  end
+
   def self.in_board?(pos)
     pos.all? { |coord| coord.between?(0, BOARD_SIZE - 1)}
   end
@@ -51,18 +56,34 @@ class Board
   end
 
   def make_move(start_pos, end_pos)
-    # doesnt care about color or kingness, only position
+    # doesnt care about color or kingness, but must be a jump if a jump is available
     # check if there is a piece at start_pos
     raise "No piece there!" unless occupied?(start_pos)
     chosen_piece = self[pos]
-
+    # if this piece can jump, it must jump
+    if chosen_piece.possible_jumps.include?(end_pos)
+      # make the move
+    elsif must_jump?(chosen_piece.color)
+      raise "You must take a piece if it's available!"
+    elsif chosen_piece.possible_slides.include?(end_pos)
+      chosen_piece.pos = end_pos
+      add_piece(chosen_piece, end_pos)
+      delete_piece(start_pos)
+    else
+      raise "You can't move there."
+    end
   end
 
   # all the pieces of a color
-  def teammates(color)
+  def team(color)
     grid.flatten.compact.select { |piece| piece.color == color}
   end
-  
+
+  # true if there are any jumps available for this team
+  def must_jump?(color)
+    team(color).any? { |piece| !piece.possible_jumps.empty?}
+  end
+
   def set_pieces(autofill)
     @grid = Array.new(BOARD_SIZE) { Array.new(BOARD_SIZE) }
     place_starting_pieces if autofill

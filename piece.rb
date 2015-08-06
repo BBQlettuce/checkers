@@ -20,6 +20,10 @@ class Piece
     "|#{picture.colorize(color)}"
   end
 
+  # def possible_moves
+  #   # you must take a jump if you can
+  #
+  # end
 
   def perform_slide
     # asks the board to do it, if possible
