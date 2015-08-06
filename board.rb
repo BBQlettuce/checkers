@@ -19,12 +19,16 @@ class Board
     grid[row][col] = value
   end
 
+  def add_piece(piece, pos)
+    self[pos] = piece
+  end
+
   def self.in_board?(pos)
     pos.all? { |coord| coord.between?(0, BOARD_SIZE - 1)}
   end
 
   def open?(pos)
-    self[pos].nil?
+    Board.in_board?(pos) && self[pos].nil?
   end
 
   def make_move(start_pos, end_pos)
@@ -51,9 +55,9 @@ class Board
     odds = (0...BOARD_SIZE).select { |x| x.odd? }
     evens = (0...BOARD_SIZE).select { |x| x.even? }
     if row.even?
-      odds.each {|col| self[[row, col]] = Piece.new([row,col])}
+      odds.each {|col| self[[row, col]] = Piece.new([row,col], self)}
     else
-      evens.each {|col| self[[row, col]] = Piece.new([row,col])}
+      evens.each {|col| self[[row, col]] = Piece.new([row,col],self)}
     end
   end
 
