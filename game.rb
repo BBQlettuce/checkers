@@ -30,6 +30,9 @@ class Game
         if picked_piece.no_valid_moves?
           raise "This piece has nowhere to go!"
         end
+        if not_jumping_when_obligated(picked_piece)
+          raise "You must jump! Pick another piece."
+        end
       rescue ArgumentError
         puts "Put in a real position!"
         retry
@@ -88,6 +91,9 @@ class Game
     output_targets
   end
 
+  def not_jumping_when_obligated(piece)
+    gameboard.must_jump(piece.color) && piece.possible_jumps.empty?
+  end
 
 end
 
