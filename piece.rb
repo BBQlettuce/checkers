@@ -9,10 +9,8 @@ class Piece
   def initialize(pos, board)
     @pos = pos
     @king = false
+    @board = board
     board.add_piece(self, pos)
-    # need it to take in a board??
-    # color either black or red, black's forward is up
-    # @color = color
   end
 
   def possible_slides
@@ -22,9 +20,10 @@ class Piece
 
   def forward_slides
     moves = []
+    #debugger
     forward_dirs.each do |x,y|
       next_pos = [pos[0] + x, pos[1] + y]
-      moves << next_pos if board.open?(pos)
+      moves << next_pos if board.open?(next_pos)
     end
     moves
   end
@@ -40,7 +39,29 @@ class Piece
   end
 
   def possible_jumps
+    # you can jump if there is an enemy in front, who has an empty space behind them
+    forward_jumps + backward_jumps
+  end
 
+  def forward_jumps
+    moves = []
+    forward_dirs.each do |x,y|
+      next_pos = [pos[0] + x, pos[1] + y]
+      hop_pos = [next_pos[0] + x, next_pos[1] + y]
+      moves << hop_pos if board.has_enemy?(next_pos) &&board.open?(hop_pos)
+    end
+    moves
+  end
+
+  def backward_jumps
+    return [] if !is_king?
+    moves = []
+    backward_dirs.each do |x,y|
+      next_pos = [pos[0] + x, pos[1] + y]
+      hop_pos = [next_pos[0] + x, next_pos[1] + y]
+      moves << hop_pos if board.has_enemy?(next_pos) &&board.open?(hop_pos)
+    end
+    moves
   end
 
   def is_king?

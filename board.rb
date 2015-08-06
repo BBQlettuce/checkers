@@ -1,3 +1,4 @@
+require 'byebug'
 require_relative 'piece'
 
 class Board
@@ -19,7 +20,12 @@ class Board
     grid[row][col] = value
   end
 
+  def render
+
+  end
+
   def add_piece(piece, pos)
+    raise "invalid position" unless open?(pos)
     self[pos] = piece
   end
 
@@ -29,6 +35,10 @@ class Board
 
   def open?(pos)
     Board.in_board?(pos) && self[pos].nil?
+  end
+
+  def has_enemy?(pos, color)
+    Board.in_board?(pos) && !open?(pos) && self[pos].color != color
   end
 
   def make_move(start_pos, end_pos)
@@ -55,9 +65,9 @@ class Board
     odds = (0...BOARD_SIZE).select { |x| x.odd? }
     evens = (0...BOARD_SIZE).select { |x| x.even? }
     if row.even?
-      odds.each {|col| self[[row, col]] = Piece.new([row,col], self)}
+      odds.each {|col| Piece.new([row,col], self)}
     else
-      evens.each {|col| self[[row, col]] = Piece.new([row,col],self)}
+      evens.each {|col| Piece.new([row,col],self)}
     end
   end
 
