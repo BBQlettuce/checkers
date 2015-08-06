@@ -17,6 +17,7 @@ class Game
   def play
     puts "Play Checkers\n"
     until gameboard.over?
+      gameboard.render
       ask_for_piece(current_player)
       begin
         picked_pos = current_player.ask_for_position
@@ -41,7 +42,9 @@ class Game
       board.assign_kings
       switch_players
     end
-
+    gameboard.render
+    switch_players
+    puts "#{current_player.name} wins!"
   end
 
   def switch_players
@@ -100,5 +103,8 @@ end
 
 
 if __FILE__ == $PROGRAM_NAME
-
+  p1 = HumanPlayer.new("A")
+  p2 = HumanPlayer.new("B")
+  game = Game.new(p1, p2)
+  game.play
 end
