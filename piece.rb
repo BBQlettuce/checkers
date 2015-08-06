@@ -3,13 +3,12 @@ class Piece
   UP_MOVE_DIRS = [[-1, -1], [-1, 1]]
   DOWN_MOVE_DIRS = [[1, -1], [1, 1]]
 
-  attr_reader :color
-  attr_accessor :position
+  attr_accessor :position, :color
 
-  def initialize(position, color)
+  def initialize(position)
     @position = position
     # color either black or red, black's forward is up
-    @color = color
+    # @color = color
   end
 
   def forward_dirs
