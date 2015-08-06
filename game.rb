@@ -77,13 +77,13 @@ class Game
     letter_inputs.each do |input|
       case input
       when "l"
-        output_targets << [pos[0] + step * dir, pos[1] - step * 1]
+        output_targets << [pos[0] + step * dir, pos[1] - step]
       when "r"
-        output_targets << [pos[0] + step * dir, pos[1] + step * 1]
+        output_targets << [pos[0] + step * dir, pos[1] + step]
       when "bl"
-        output_targets << [pos[0] - step * dir, pos[1] - step * 1]
+        output_targets << [pos[0] - step * dir, pos[1] - step]
       when "br"
-        output_targets << [pos[0] - step * dir, pos[1] + step * 1]
+        output_targets << [pos[0] - step * dir, pos[1] + step]
       end
       pos = output_targets.last
     end
@@ -92,7 +92,7 @@ class Game
   end
 
   def not_jumping_when_obligated(piece)
-    gameboard.must_jump(piece.color) && piece.possible_jumps.empty?
+    gameboard.must_jump?(piece.color) && piece.possible_jumps.empty?
   end
 
 end

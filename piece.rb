@@ -63,7 +63,7 @@ class Piece
     if move_sequence.length == 1
       target_pos = move_sequence.first
       # first try sliding
-      return if perform_slide(target_pos)
+      return if !board.must_jump?(color) && perform_slide(target_pos)
       # then increment the step and try jumping
       x_dif = target_pos[0] - pos[0]
       y_dif = target_pos[1] - pos[1]
