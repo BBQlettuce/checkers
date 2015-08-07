@@ -59,11 +59,6 @@ class Board
     grid.flatten.compact
   end
 
-  # USED FOR DEBUGGING kings
-  def any_kings?
-    pieces.any? {|p| p.is_king? }
-  end
-
   def dup
     dup_board = Board.new(false)
     pieces.each do |piece|
@@ -95,14 +90,17 @@ class Board
   end
 
   def winner
-    :red if no_more_pieces(:black) || no_more_moves(:black)
-    :black if no_more_pieces(:red) || no_more_moves(:red)
+    return :red if no_more_pieces(:black) || no_more_moves(:black)
+    return :black if no_more_pieces(:red) || no_more_moves(:red)
     nil
   end
 
   def over?
     !winner.nil?
   end
+
+
+  private
 
   # lose conditions
   def no_more_moves(color)
@@ -114,8 +112,6 @@ class Board
   def no_more_pieces(color)
     team(color).empty?
   end
-
-  private
 
   def set_pieces(autofill)
     @grid = Array.new(BOARD_SIZE) { Array.new(BOARD_SIZE) }
