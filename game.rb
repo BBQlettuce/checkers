@@ -19,38 +19,9 @@ class Game
     puts "Play Checkers\n"
     until gameboard.over?
       gameboard.render
-      ask_for_piece(current_player)
-      begin
-        picked_pos = current_player.ask_for_position
-        raise "Nothing there!" if gameboard[picked_pos].nil?
-        picked_piece = gameboard[picked_pos]
-        if current_player.picked_wrong_color(picked_piece.color)
-          raise "You can't move your opponent's piece!"
-        end
-        if picked_piece.no_valid_moves?
-          raise "This piece has nowhere to go!"
-        end
-        if not_jumping_when_obligated(picked_piece)
-          raise "You must jump! Pick another piece."
-        end
-      rescue ArgumentError
-        puts "Put in a real position!"
-        retry
-      rescue Exception => e
-        puts e.message
-        puts "Try again."
-        retry
-      end
-
-      begin
-        letter_inputs = current_player.ask_for_move_seq
-        move_sequence = translate_move_seq(picked_piece, letter_inputs)
-        picked_piece.perform_moves(move_sequence)
-      rescue Exception => e
-        puts e.message
-        puts "Try again."
-        retry
-      end
+      announce_turn(current_player)
+      picked_piece = current_player.prompt_for_piece(gameboard)
+      current_player.prompt_for_move_seq(picked_piece)
       gameboard.assign_kings
       switch_players
     end
@@ -63,11 +34,11 @@ class Game
     self.current_player = current_player == p1 ? p2 : p1
   end
 
-  def ask_for_piece(player)
+  def announce_turn(player)
     puts "#{player.name}'s turn. Which piece do you want to move?"
   end
 
-  def translate_move_seq(piece, letter_inputs)
+  def self.translate_move_seq(piece, letter_inputs)
     pos = piece.pos
     dir = piece.forward_dir
     # stuff changes depending on the # of inputs
@@ -88,10 +59,6 @@ class Game
     end
 
     output_targets
-  end
-
-  def not_jumping_when_obligated(piece)
-    gameboard.must_jump?(piece.color) && piece.possible_jumps.empty?
   end
 
 end
@@ -117,11 +84,53 @@ class HumanPlayer
     input
   end
 
+  def prompt_for_piece(gameboard)
+    begin
+      picked_pos = ask_for_position
+      raise "Nothing there!" if gameboard[picked_pos].nil?
+      picked_piece = gameboard[picked_pos]
+      if picked_wrong_color(picked_piece.color)
+        raise "You can't move your opponent's piece!"
+      end
+      if picked_piece.no_moves?
+        raise "This piece has nowhere to go!"
+      end
+      if not_jumping_when_obligated(gameboard, picked_piece)
+        raise "You must jump! Pick another piece."
+      end
+    rescue ArgumentError
+      puts "Put in a real position!"
+      retry
+    rescue RuntimeError => e
+      puts e.message
+      puts "Try again."
+      retry
+    else
+      return picked_piece
+    end
+  end
+
+  def prompt_for_move_seq(picked_piece)
+    begin
+      letter_inputs = ask_for_move_seq
+      move_sequence = Game.translate_move_seq(picked_piece, letter_inputs)
+      picked_piece.perform_moves(move_sequence)
+    rescue RuntimeError => e
+      puts e.message
+      puts "Try again."
+      retry
+    end
+  end
+
   # can't pick your opponent's piece
   def picked_wrong_color(picked_color)
     color != picked_color
   end
 
+  # picking a nonjumping piece when you must jump
+  def not_jumping_when_obligated(gameboard, piece)
+    gameboard.must_jump?(piece.color) && piece.possible_jumps.empty?
+  end
 end
 
 
