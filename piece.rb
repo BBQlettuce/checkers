@@ -27,11 +27,7 @@ class Piece
     "|#{picture.colorize(color)}"
   end
 
-  # can get rid of angle and stuff, and only take in a target pos;
-  # then possible_slides and jumps can be simplified
   def perform_slide(target_pos)
-    # dir = forward ? forward_dir : backward_dir
-    # target_pos = [pos[0] + dir, pos[1] + angle]
     if possible_slides.include?(target_pos)
       board.delete_piece(pos)
       self.pos = target_pos
@@ -43,10 +39,7 @@ class Piece
   end
 
   def perform_jump(target_pos)
-    # dir = forward ? forward_dir : backward_dir
-    # target_pos = [pos[0] + (dir * 2), pos[1] + (angle * 2)]
     if possible_jumps.include?(target_pos)
-      # make the move
       avg_x = (pos[0] + target_pos[0]) / 2
       avg_y = (pos[1] + target_pos[1]) / 2
       board.delete_piece(pos)
@@ -141,7 +134,7 @@ class Piece
     moves
   end
 
-  def no_valid_moves?
+  def no_moves?
     (possible_slides + possible_jumps).empty?
   end
 
