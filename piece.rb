@@ -68,12 +68,13 @@ class Piece
       x_dif = target_pos[0] - pos[0]
       y_dif = target_pos[1] - pos[1]
       target_pos = [pos[0] + 2 * x_dif, pos[1] + 2 * y_dif]
-      return if perform_jump(target_pos)
+      return if perform_jump(target_pos) && possible_jumps.empty?
       raise "Cannot perform this move."
     else
       move_sequence.each do |target_pos|
         raise "Cannot perform this move." unless perform_jump(target_pos)
       end
+      raise "Still jumps left!" unless possible_jumps.empty?
     end
   end
 
